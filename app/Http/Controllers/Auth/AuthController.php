@@ -11,7 +11,10 @@ use App\Http\Controllers\Controller;
 class AuthController extends Controller
 {
     public function signup(Request $request)
-    {
+    {   
+        if(empty($request->email) || empty($request->password) || empty($request->name) || empty($request->last_name)){
+            return response()->json('FAIL', 200);
+        }
         $body = $request->validate([
             'name' => 'required|string',
             'last_name' => 'required|string',
@@ -32,13 +35,15 @@ class AuthController extends Controller
         return response()->json($response, 201);
     }
 
+    public function test(){
+        return 'FUNCIONA';
+    }
+
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
 
-        return [
-            'message' => 'Loggued Out'
-        ];
+        return response('LOGGED OUT');
     }
 
     public function login(Request $request)
@@ -49,9 +54,10 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt($body)) {
-            return response()->json([
-                'message' => 'Bad credentials',
-            ], 401);
+            // return response()->json([
+            //     'data' => 'BAD CREDENTIALS',
+            // ], 401);
+            return response('BAD CREDENTIALS');
         }
 
         $user = Auth::user();
